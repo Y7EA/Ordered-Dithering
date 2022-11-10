@@ -1,129 +1,140 @@
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
+#include <math.h>
 using namespace std;
-int checkColor(int a, int b);
-
-unsigned char buf[512][512];
-
-unsigned char out[512][512];
-
-float ratio = 1.0 / 17;
+typedef unsigned char   BYTE;   //  1 byte (0~255)
 
 
-int main()
+typedef unsigned char   BYTE;   //  1 byte (0~255)
+typedef unsigned short  WORD;   //  2 bytes (0~65536)
+typedef unsigned long   DWORD;  //4 bytes (0~2^32 -1)
+
+#pragma pack(push)    //store
+#pragma pack(2)        //2-bytes aligned
+struct INFO
 {
+    // BITMAPFILEHEADER (14 bytes) from 16 reducing to 14
+    WORD bfType;          //BM -> 0x4d42 (19778)
+    DWORD BfSize;
+    WORD bfReserved1;
+    WORD bfReserved2;
+    DWORD bfOffBits;
+    // BITMAPINFOHEADER(40 bytes)
+    DWORD biSize;
+    int biWidth;
+    int biHeight;
+    WORD biPlanes;
+    WORD biBitCount;
+    DWORD biCompression;
+    DWORD biSizeImage;
+    int biXPelsPerMeter;
+    int biYPelsPerMeter;
+    DWORD biClrUsed;
+    DWORD biClrImportant;
+};
+#pragma pack(pop)      //restore
 
+int orderedDithering [2][2] ={{0,2},{3,1}};
+int mapSize=4;
+int size_x=2;
 
-    FILE *fp, *output;
-
-    int i, j, k, l;
-
-    /*
-    4x4 Ordered Dither Matrix:
-
-    [0 8 2 10]
-
-    [12 4 14 6]
-
-    [3 11 1  9]
-
-    [15 7 13 5]
-    */
-    unsigned int dith[4][4] = {{0, 8, 2, 10},
-                              {12, 4, 14, 6},
-                              {3, 11, 1,  9},
-                              {15, 7, 13, 5}};
-
-
-    if((fp = fopen("Lenna.png", "rb")) == NULL)
-    {
-
-        printf("error opening file\n");
-
-    }
-
-
-
-    for (i = 0; i < 512; i++)
-    {
-
-        for (j = 0; j < 512; j++)
+class Image
+{
+    public:
+        
+        int height;
+        int width;
+        int rowsize;    // bgr -> 3 bytes(24 bits)
+        BYTE* term;
+        
+        Image()   //storage is bottom-up,from left to right
         {
-
-            buf[i][j] = fgetc(fp);
-
+            height=0;
+            width=0;
         }
-
-    }
-
-
-    i = 0;
-
-    j = 0;
-
-
-    int x, y;
-
-    int bd = 64;
-
-    for (k = 0; k < 512; k++)
-    {
-
-        for (l = 0; l < 512; l++)
+        
+        Image(int height,int width)
         {
-
-            int oldPixel = buf[k][l];
-
-            int value = (oldPixel + (ratio * dith[k%4][l%4]));
-
-            int r = ((oldPixel >> 16) & 0xff) + value;
-
-            int g = ((oldPixel >> 8) & 0xff) + value;
-
-            int b = (oldPixel & 0xff) + value;
-
-            int newPixel = 0x000000 | checkColor(r, bd) << 16 | checkColor(g, bd) << 8 | checkColor(b, bd);
-
-            out[k][l] = newPixel;
-
+            this->height=height;
+            this->width=width;
+            rowsize=(3*width+3)/4*4;   //set to be a multiple of "4"
+            term=new BYTE[height*rowsize];
+            for(int y=0; y<height; y++)
+                for(int x=0; x<width; x++)
+                    term[y*rowsize+3*x]=term[y*rowsize+3*x+1]=term[y*rowsize+3*x+2]= 255;
         }
-
-    }
-
-
-    output = fopen("Lenna_Dither.png", "wb");
-
-
-
-    for (i = 0; i < 512; i++)
-    {
-
-        for (j = 0; j < 512; j++)
+        
+        void load(const char *filename)
         {
-
-            fputc(out[i][j], output);
-
+            INFO h;
+            ifstream f;
+            f.open(filename,ios::in|ios::binary);
+            f.seekg(0,f.end);
+            f.seekg(0,f.beg);
+            f.read((char*)&h,sizeof(h));
+                        
+            width=h.biWidth;
+            height=h.biHeight;
+           
+            *this=Image(height,width);
+            f.read((char*)term,height*rowsize);
+            f.close();
         }
+        
+        void save(const char* filename)
+        {
+            INFO h=
+            {19778,   //0x4d42
+                DWORD(54+rowsize*height),
+                0,
+                0,
+                54,
+                40,
+                width,
+                height,
+                1,
+                24,
+                0,
+                DWORD(rowsize*height),
+                3780,   //3780
+                3780,   //3780
+                0,
+                0
+            };
+            ofstream f;
+            f.open(filename,ios::out|ios::binary);
+            f.write((char*)&h,sizeof(h));
+            f.write((char*)term,rowsize*height);
+            f.close();
+        }
+};
 
+int pixels[3];
+Image dithering(Image original , int orderedDithering [2][2]){
+    Image input = original;
+    for(int  y=0 ; y < input.height ; y++){
+      int  row = y%mapSize ;
+        for(int x=1; x<input.width; x++)
+        {
+            int col = x%mapSize ;
+            int  blue    = pixels[x * 3 + 0];
+            int  green   = pixels[x * 3 + 1];
+            int  red     = pixels[x * 3 + 2];
+            pixels[x * 3 + 0]   = (blue  < orderedDithering[col][row] ? 0 : 255);
+            pixels[x * 3 + 1]   = (green < orderedDithering[col][row] ? 0 : 255);
+            pixels[x * 3 + 2]   = (red   < orderedDithering[col][row] ? 0 : 255);
+        }
     }
-
-
-
-    fclose(output);
-
-    fclose(fp);
-    cout<<"Done";
-
-
-    return 0;
+    return input;
 
 }
 
 
 
-int checkColor(int a, int b)
-{
-
-    return a / b * b;
-
+int main(){
+    Image input,output;
+    input.load("lena.png");
+    output = dithering (input , orderedDithering[2][2]);
+    output.save("lena_out.png");
 }
