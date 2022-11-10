@@ -10,8 +10,6 @@ typedef unsigned char   BYTE;   //  1 byte (0~255)
 typedef unsigned short  WORD;   //  2 bytes (0~65536)
 typedef unsigned long   DWORD;  //4 bytes (0~2^32 -1)
 
-#pragma pack(push)    //store
-#pragma pack(2)        //2-bytes aligned
 struct INFO
 {
     // BITMAPFILEHEADER (14 bytes) from 16 reducing to 14
@@ -33,7 +31,6 @@ struct INFO
     DWORD biClrUsed;
     DWORD biClrImportant;
 };
-#pragma pack(pop)      //restore
 
 int orderedDithering [2][2] ={{0,2},{3,1}};
 int mapSize=4;
