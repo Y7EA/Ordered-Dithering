@@ -135,6 +135,6 @@ Image dithering(Image original , int orderedDithering [2][2]){
 int main(){
     Image input,output;
     input.load("lena.png");
-    output = dithering (input , orderedDithering[2][2]);
+    output = dithering (input , orderedDithering);
     output.save("lena_out.png");
 }
