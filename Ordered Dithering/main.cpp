@@ -13,6 +13,7 @@ typedef unsigned long   DWORD;  //4 bytes (0~2^32 -1)
 #pragma pack(push)	//store
 #pragma pack(2)		//2-bytes aligned
 
+
 struct INFO
 {
     // BITMAPFILEHEADER (14 bytes) from 16 reducing to 14
@@ -34,88 +35,92 @@ struct INFO
     DWORD biClrUsed;
     DWORD biClrImportant;
 };
+
 #pragma pack(pop)  	//restore
 
-int orderedDithering [2][2] ={{0,2},{3,1}};
+int orderedDithering [2][2] = {{0,2},{3,1}};
 int mapSize=4;
 int size_x=2;
 
 class Image
 {
-    public:
-        
-        int height;
-        int width;
-        int rowsize;    // bgr -> 3 bytes(24 bits)
-        BYTE* term;
-        
-        Image()   //storage is bottom-up,from left to right
+public:
+
+    int height;
+    int width;
+    int rowsize;    // RGB -> 3 bytes(24 bits)
+    BYTE* term;
+
+    Image()   //storage is bottom-up,from left to right
+    {
+        height=0;
+        width=0;
+    }
+
+    Image(int height,int width)
+    {
+        this->height=height;
+        this->width=width;
+        rowsize=(3*width+3)/4*4;   //set to be a multiple of "4"
+        term=new BYTE[height*rowsize];
+        for(int y=0; y<height; y++)
+            for(int x=0; x<width; x++)
+                term[y*rowsize+3*x]=term[y*rowsize+3*x+1]=term[y*rowsize+3*x+2]= 255;
+    }
+
+    void load(const char *filename)
+    {
+        INFO h;
+        ifstream f;
+        f.open(filename,ios::in|ios::binary);
+        f.seekg(0,f.end);
+        f.seekg(0,f.beg);
+        f.read((char*)&h,sizeof(h));
+
+        width=h.biWidth;
+        height=h.biHeight;
+
+        *this=Image(height,width);
+        f.read((char*)term,height*rowsize);
+        f.close();
+    }
+
+    void save(const char* filename)
+    {
+        INFO h=
         {
-            height=0;
-            width=0;
-        }
-        
-        Image(int height,int width)
-        {
-            this->height=height;
-            this->width=width;
-            rowsize=(3*width+3)/4*4;   //set to be a multiple of "4"
-            term=new BYTE[height*rowsize];
-            for(int y=0; y<height; y++)
-                for(int x=0; x<width; x++)
-                    term[y*rowsize+3*x]=term[y*rowsize+3*x+1]=term[y*rowsize+3*x+2]= 255;
-        }
-        
-        void load(const char *filename)
-        {
-            INFO h;
-            ifstream f;
-            f.open(filename,ios::in|ios::binary);
-            f.seekg(0,f.end);
-            f.seekg(0,f.beg);
-            f.read((char*)&h,sizeof(h));
-                        
-            width=h.biWidth;
-            height=h.biHeight;
-           
-            *this=Image(height,width);
-            f.read((char*)term,height*rowsize);
-            f.close();
-        }
-        
-        void save(const char* filename)
-        {
-            INFO h=
-            {19778,   //0x4d42
-                DWORD(54+rowsize*height),
-                0,
-                0,
-                54,
-                40,
-                width,
-                height,
-                1,
-                24,
-                0,
-                DWORD(rowsize*height),
-                3780,   //3780
-                3780,   //3780
-                0,
-                0
-            };
-            ofstream f;
-            f.open(filename,ios::out|ios::binary);
-            f.write((char*)&h,sizeof(h));
-            f.write((char*)term,rowsize*height);
-            f.close();
-        }
+            19778,   //0x4d42
+            DWORD(54+rowsize*height),
+            0,
+            0,
+            54,
+            40,
+            width,
+            height,
+            1,
+            24,
+            0,
+            DWORD(rowsize*height),
+            3780,   //3780
+            3780,   //3780
+            0,
+            0
+        };
+        ofstream f;
+        f.open(filename,ios::out|ios::binary);
+        f.write((char*)&h,sizeof(h));
+        f.write((char*)term,rowsize*height);
+        f.close();
+    }
 };
 
 int pixels[3];
-Image dithering(Image original , int orderedDithering [2][2]){
+Image dithering(Image original, int orderedDithering [2][2])
+{
     Image input = original;
-    for(int  y=0 ; y < input.height ; y++){
-      int  row = y%mapSize ;
+    for(int  y=0 ; y < input.height ; y++)
+    {
+        int  row = y%mapSize ;
         for(int x=1; x<input.width; x++)
         {
             int col = x%mapSize ;
@@ -133,9 +138,12 @@ Image dithering(Image original , int orderedDithering [2][2]){
 
 
 
-int main(){
+int main()
+{
     Image input,output;
-    input.load("lena.png");
-    output = dithering (input , orderedDithering);
-    output.save("lena_out.png");
+    input.load("Lenna.png");
+    output = dithering (input, orderedDithering);
+    output.save("RAHAFERRORS.png");
+    cout<<"Done";
+
 }
