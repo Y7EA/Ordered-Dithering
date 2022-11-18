@@ -118,16 +118,21 @@ public:
     double resRGB  = 0;
     int Gray = 0;
     int  outDith    = 0; // output in dithering  white = 1 or black = 0
-    int  orderedDithering [2][2] = {{ 0,2 },{3,1}};
-
- //Gray Image
+    int  orderedDithering [2][2] = {	//	2x2  Dithering Matrix
+   												{	 51, 206	},
+ 												{	153, 102	}
+ 											};
+        /* Odered matrix = [0 , 2
+                           3 , 1] --> in index range matrix 0 = 51 , 2 = 206 , 3 = 153 , 1 = 102   256/5 = 51
+           */    
+  //Gray Image
 Image grayscale(Image input){
         Image output = input ;
-  for ( int iY = 0; iY < input.height; iY++ )
+  for ( int Y = 0; Y < input.height; Y++ )
     {
-        for ( int iX = 0; iX < input.width; iX++ )
+        for ( int X = 0; X < input.width; X++ )
         {
-            INDEX = ( iX *input.height* 3 ) + ( iY * 3 );
+            INDEX = ( X *input.height* 3 ) + ( Y * 3 );
             byteRGB_BA =  input.term[INDEX+0]; //Blue
             byteRGB_GA =  input.term[INDEX+1]; //Green
             byteRGB_RA =  input.term[INDEX+2]; //Red
@@ -162,7 +167,7 @@ Image dithering(Image input)
                 for ( int j = 0; j < 2; j++ )
                 {
                    // Read The index of pixel so mult 3
-                    INDEX = ((x+i)*3)+((y+j)*input.width* 3 );
+                    INDEX = ((x+j)*3)+((y+i)*input.width* 3 );
                     Gray = input.term[INDEX+0];
                     if ( Gray > orderedDithering  [ i ][ j ] )
                     {
