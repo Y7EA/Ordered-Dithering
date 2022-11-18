@@ -124,7 +124,7 @@ public:
  											};
         /* Odered matrix = [0 , 2
                            3 , 1] --> in index range matrix 0 = 51 , 2 = 206 , 3 = 153 , 1 = 102   256/5 = 51
-           */    
+           */
   //Gray Image
 Image grayscale(Image input){
         Image output = input ;
