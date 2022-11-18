@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1668121553 source:c:\users\y7ea\desktop\ordered dithering\ordered dithering\main.cpp
+	<iostream>
+	<fstream>
+	<stdlib.h>
+	<math.h>
+
+1668771013 source:c:\users\y7ea\desktop\ordered dithering33\ordered dithering\main.cpp
+	<iostream>
+	<fstream>
+	<math.h>
+
