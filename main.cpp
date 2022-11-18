@@ -57,9 +57,6 @@ public:
         this->width=width;
         rowsize=(3*width+3);
         term=new BYTE[height*rowsize];
-        for(int y=0; y<height; y++)
-            for(int x=0; x<width; x++)
-                term[y*rowsize+3*x]=term[y*rowsize+3*x+1]=term[y*rowsize+3*x+2]= 255;
     }
 
     void load(const char *filename)
@@ -67,10 +64,7 @@ public:
         INFO h;
         ifstream f;
         f.open(filename,ios::in|ios::binary);
-        f.seekg(0,f.end);
-        f.seekg(0,f.beg);
         f.read((char*)&h,sizeof(h));
-
         width=h.biWidth;
         height=h.biHeight;
         cout<<"reading from "<<filename<<"..."<<endl;
@@ -87,7 +81,7 @@ public:
             DWORD(rowsize*height),
             0,
             0,
-            54,
+            0,
             40,
             width,
             height,
@@ -112,11 +106,9 @@ public:
 
  // Variables
     long INDEX = 0;
-    double byteRGB_RA = 0;
-    double byteRGB_GA = 0;
-    double byteRGB_BA = 0;
-    double resRGB  = 0;
-    int Gray = 0;
+    int R = 0 , G = 0 , B = 0;
+    int resRGB  = 0;
+    int gray = 0;
     int  outDith    = 0; // output in dithering  white = 1 or black = 0
     int  orderedDithering [2][2] = {	//	2x2  Dithering Matrix
    												{	 51, 206	},
@@ -133,11 +125,11 @@ Image grayscale(Image input){
         for ( int X = 0; X < input.width; X++ )
         {
             INDEX = ( X *input.height* 3 ) + ( Y * 3 );
-            byteRGB_BA =  input.term[INDEX+0]; //Blue
-            byteRGB_GA =  input.term[INDEX+1]; //Green
-            byteRGB_RA =  input.term[INDEX+2]; //Red
+            B =  input.term[INDEX+0]; //Blue
+            G =  input.term[INDEX+1]; //Green
+            R =  input.term[INDEX+2]; //Red
             // To transform RGB to  Gray scale).
-            resRGB =  ( byteRGB_RA +  byteRGB_GA +  byteRGB_BA)/3;
+            resRGB =  ( R +  G +  B)/3;
 
             input.term[INDEX+0] = resRGB;
             input.term[INDEX+1] = resRGB;
@@ -168,8 +160,8 @@ Image dithering(Image input)
                 {
                    // Read The index of pixel so mult 3
                     INDEX = ((x+j)*3)+((y+i)*input.width* 3 );
-                    Gray = input.term[INDEX+0];
-                    if ( Gray > orderedDithering  [ i ][ j ] )
+                    gray = input.term[INDEX+0];
+                    if ( gray > orderedDithering  [ i ][ j ] )
                     {
                         outDith = 255;
                     }
@@ -189,15 +181,13 @@ Image dithering(Image input)
 
     return output ;
 }
+#pragma pack(pop)  	//Restore
+
 
 int main()
 {
 
     Image input,output;
-  //  char filename[80];
-  //  cout<<"Input a file: ";
-   // cin>>filename;
-   // input.load(filename);
    input.load("Lenna.bmp");
     output = grayscale (input );
     output=dithering(input );
