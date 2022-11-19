@@ -104,24 +104,26 @@ public:
 };
 
 
- // Variables
-    long INDEX = 0;
-    int R = 0 , G = 0 , B = 0;
-    int resRGB  = 0;
-    int gray = 0;
-    int  outDith    = 0; // output in dithering  white = 1 or black = 0
-    int  orderedDithering [2][2] = {	//	2x2  Dithering Matrix
-   												{	 63, 127	},
- 												{	191, 255	}
- 											};
+// Variables
+long INDEX = 0;
+int R = 0, G = 0, B = 0;
+int resRGB  = 0;
+int gray = 0;
+int  outDith    = 0; // output in dithering  white = 1 or black = 0
+int  orderedDithering [2][2] =  	//	2x2  Dithering Matrix
+{
+    {	 63, 127	},
+    {	191, 255	}
+};
 
-        /* Odered matrix = [0 , 2
-                           3 , 1] --> in index range matrix 0 = 63 , 2 = 191 , 3 = 255 , 1 = 127   256/4 = 64
-           */
-  //Gray Image
-Image grayscale(Image input){
-        Image output = input ;
-  for ( int Y = 0; Y < input.height; Y++ )
+/* Odered matrix = [0 , 2
+                   3 , 1] --> in index range matrix 0 = 63 , 2 = 191 , 3 = 255 , 1 = 127   256/4 = 64
+   */
+//Gray Image
+Image grayscale(Image input)
+{
+    Image output = input ;
+    for ( int Y = 0; Y < input.height; Y++ )
     {
         for ( int X = 0; X < input.width; X++ )
         {
@@ -145,11 +147,11 @@ Image grayscale(Image input){
 Image dithering(Image input)
 {
 
-   Image output = input ;
+    Image output = input ;
 
 
-     for( int y=0 ; y < input.height ; y+=3) // step 3 -> in pixels RGB
-     {
+    for( int y=0 ; y < input.height ; y+=3) // step 3 -> in pixels RGB
+    {
 
         for(int x=0; x<input.width; x+=3)
         {
@@ -159,7 +161,7 @@ Image dithering(Image input)
 
                 for ( int j = 0; j < 2; j++ )
                 {
-                   // Read The index of pixel so mult 3
+                    // Read The index of pixel so mult 3
                     INDEX = ((x+j)*3)+((y+i)*input.width* 3);
                     gray = input.term[INDEX+0];
                     if ( gray > orderedDithering  [ i ][ j ] )
@@ -193,31 +195,31 @@ int main()
     output = grayscale (input );
     output=dithering(input );
     output.save("rahafssss.png");
-   cout << "                     ,---.           ,---.   " << endl;
-	cout << "                    / /^`.\\.--''''-./,'^\\ \\	" << endl;
-	cout << "                    \\ \\    _       _    / /	" << endl;
-	cout << "                     `./  / __   __ \\  \\,'	" << endl;
-	cout << "                      /    /_O)_(_O\\    \\	" << endl;
-	cout << "                      |  .-'  ___  `-.  |	" << endl;
-	cout << "                   .--|       \\_/       |--.	" << endl;
-	cout << "                 ,'    \\   \\   |   /   /    `." << endl;
-	cout << "                /       `.  `--^--'  ,'       \\" << endl;
-	cout << "             .-^^^^^-.    `--.___.--'     .-^^^^^-." << endl;
-	cout << ".-----------/         \\------------------/         \\--------------." << endl;
-	cout << "| .---------\\         /----------------- \\         /------------. |" << endl;
-	cout << "| |          `-`--`--'                    `--'--'-'             | |" << endl;
-	cout << "| |                                                             | |" << endl;
-	cout << "| |                            Done                             | |" << endl;
-	cout << "| |                                                             | |" << endl;
-	cout << "| |                                                             | |" << endl;
-	cout << "| |_____________________________________________________________| |" << endl;
-	cout << "|_________________________________________________________________|" << endl;
-	cout << "                   )__________|__|__________(" << endl;
-	cout << "                  |            ||            |" << endl;
-	cout << "                  |____________||____________|" << endl;
-	cout << "                    ),-----.(      ),-----.(" << endl;
-	cout << "                  ,'   ==.   \\    /  .==    `." << endl;
-	cout << "                 /            )  (            \\" << endl;
-	cout << "                 `==========='    `==========='  " << endl;
+    cout << "                     ,---.           ,---.   " << endl;
+    cout << "                    / /^`.\\.--''''-./,'^\\ \\	" << endl;
+    cout << "                    \\ \\    _       _    / /	" << endl;
+    cout << "                     `./  / __   __ \\  \\,'	" << endl;
+    cout << "                      /    /_O)_(_O\\    \\	" << endl;
+    cout << "                      |  .-'  ___  `-.  |	" << endl;
+    cout << "                   .--|       \\_/       |--.	" << endl;
+    cout << "                 ,'    \\   \\   |   /   /    `." << endl;
+    cout << "                /       `.  `--^--'  ,'       \\" << endl;
+    cout << "             .-^^^^^-.    `--.___.--'     .-^^^^^-." << endl;
+    cout << ".-----------/         \\------------------/         \\--------------." << endl;
+    cout << "| .---------\\         /----------------- \\         /------------. |" << endl;
+    cout << "| |          `-`--`--'                    `--'--'-'             | |" << endl;
+    cout << "| |                                                             | |" << endl;
+    cout << "| |                            Done                             | |" << endl;
+    cout << "| |                                                             | |" << endl;
+    cout << "| |                                                             | |" << endl;
+    cout << "| |_____________________________________________________________| |" << endl;
+    cout << "|_________________________________________________________________|" << endl;
+    cout << "                   )__________|__|__________(" << endl;
+    cout << "                  |            ||            |" << endl;
+    cout << "                  |____________||____________|" << endl;
+    cout << "                    ),-----.(      ),-----.(" << endl;
+    cout << "                  ,'   ==.   \\    /  .==    `." << endl;
+    cout << "                 /            )  (            \\" << endl;
+    cout << "                 `==========='    `==========='  " << endl;
 
 }
