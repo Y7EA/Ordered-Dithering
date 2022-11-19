@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-//Y7EA0 Ordered Dithering
+//Y7EA0 Rahafss1 Ordered Dithering
 using namespace std;
 typedef unsigned char   BYTE;   //  1 byte (0~255)
 typedef unsigned short  WORD;   //  2 bytes (0~65536)
@@ -111,11 +111,12 @@ public:
     int gray = 0;
     int  outDith    = 0; // output in dithering  white = 1 or black = 0
     int  orderedDithering [2][2] = {	//	2x2  Dithering Matrix
-   												{	 51, 206	},
- 												{	153, 102	}
+   												{	 63, 127	},
+ 												{	191, 255	}
  											};
+
         /* Odered matrix = [0 , 2
-                           3 , 1] --> in index range matrix 0 = 51 , 2 = 206 , 3 = 153 , 1 = 102   256/5 = 51
+                           3 , 1] --> in index range matrix 0 = 63 , 2 = 191 , 3 = 255 , 1 = 127   256/4 = 64
            */
   //Gray Image
 Image grayscale(Image input){
@@ -144,10 +145,10 @@ Image grayscale(Image input){
 Image dithering(Image input)
 {
 
-    Image output = input ;
+   Image output = input ;
 
 
-      for( int y=0 ; y < input.height ; y+=3) // step 3 -> in pixels RGB
+     for( int y=0 ; y < input.height ; y+=3) // step 3 -> in pixels RGB
      {
 
         for(int x=0; x<input.width; x+=3)
@@ -159,7 +160,7 @@ Image dithering(Image input)
                 for ( int j = 0; j < 2; j++ )
                 {
                    // Read The index of pixel so mult 3
-                    INDEX = ((x+j)*3)+((y+i)*input.width* 3 );
+                    INDEX = ((x+j)*3)+((y+i)*input.width* 3);
                     gray = input.term[INDEX+0];
                     if ( gray > orderedDithering  [ i ][ j ] )
                     {
@@ -178,8 +179,8 @@ Image dithering(Image input)
         }
     }
 
-
     return output ;
+
 }
 #pragma pack(pop)  	//Restore
 
@@ -188,7 +189,7 @@ int main()
 {
 
     Image input,output;
-   input.load("Lenna.bmp");
+    input.load("Lena.bmp");
     output = grayscale (input );
     output=dithering(input );
     output.save("rahafssss.png");
