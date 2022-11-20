@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-//Y7EA0 Rahafss1 Ordered Dithering
+//Y7EA0& Rahaf1 Ordered Dithering
 using namespace std;
 typedef unsigned char   BYTE;   //  1 byte (0~255)
 typedef unsigned short  WORD;   //  2 bytes (0~65536)
@@ -112,8 +112,8 @@ int gray = 0;
 int  outDith    = 0; // output in dithering  white = 1 or black = 0
 int  orderedDithering [2][2] =  	//	2x2  Dithering Matrix
 {
-    {	 63, 127	},
-    {	191, 255	}
+    {	 63, 191	},
+    {	255, 127	}
 };
 
 /* Odered matrix = [0 , 2
@@ -194,7 +194,7 @@ int main()
     input.load("Lena.bmp");
     output = grayscale (input );
     output=dithering(input );
-    output.save("rahafssss.png");
+    output.save("outimag.png");
     cout << "                     ,---.           ,---.   " << endl;
     cout << "                    / /^`.\\.--''''-./,'^\\ \\	" << endl;
     cout << "                    \\ \\    _       _    / /	" << endl;
