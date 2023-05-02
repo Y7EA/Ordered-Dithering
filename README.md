@@ -42,7 +42,7 @@ To save the output image, use the Image.save() function:
 ```
 output.save("resultImage.png");
 ```
-###Contributing
+### Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
