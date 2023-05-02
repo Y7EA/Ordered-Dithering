@@ -24,30 +24,22 @@ The program takes an input BMP image and performs grayscale and dithering operat
 ### Load Image
 To load the input BMP image, use the Image.load() function:
 ```
-c++
-Copy code
 Image input;
 input.load("lena.bmp");
 ```
 ### Grayscale
 To convert the input image to grayscale, use the grayscale() function:
 ```
-c++
-Copy code
 Image output = grayscale(input);
 ```
 ### Dithering
 To apply dithering to the grayscale image, use the dithering() function:
 ```
-c++
-Copy code
 Image output = dithering(input);
 ```
 ### Save Image
 To save the output image, use the Image.save() function:
 ```
-c++
-Copy code
 output.save("resultImage.png");
 ```
 ###Contributing
